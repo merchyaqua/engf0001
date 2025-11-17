@@ -10,6 +10,42 @@
     <h1>Dashboard</h1>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+    <form id="controlForm">
+      <div>
+        <label for="temperature_C">Temperature (°C):</label>
+        <input type="range" id="temperature_C" name="temperature_C" min="20" max="30" value="23" step="0.1" oninput="this.nextElementSibling.textContent = this.value">
+        <span>23</span>
+      </div>
+      <div>
+        <label for="pH">pH:</label>
+        <input type="range" id="pH" name="pH" min="0" max="14" value="6.5" step="0.1" oninput="this.nextElementSibling.textContent = this.value">
+        <span>6.5</span>
+      </div>
+      <div>
+        <label for="rpm">RPM:</label>
+        <input type="range" id="rpm" name="rpm" min="0" max="2000" value="850" step="1" oninput="this.nextElementSibling.textContent = this.value">
+        <span>850</span>
+      </div>
+    </form>
+    <script>
+      document.getElementById('controlForm').addEventListener('change', function(e) {
+      const form = e.target.form;
+      const data = {
+        temperature_C: form.temperature_C.value,
+        pH: form.pH.value,
+        rpm: form.rpm.value
+      };
+      fetch('/publish', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      });
+    </script>
+    </form>
+      <h2>Messages</h2>
     <div id="messages">
       <div
         id="sse-anchor"

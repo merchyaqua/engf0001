@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 
-# BROKER = "test.mosquitto.org"   # public broker
+BROKER = "test.mosquitto.org"   # public broker
 BROKER = 'engf0001.cs.ucl.ac.uk'
 PORT = 1883
 TOPIC = "#"             # feel free to change

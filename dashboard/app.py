@@ -1,16 +1,19 @@
+import datetime
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context
 from flask_mqtt import Mqtt
-import time, queue, threading, html
+import time, queue, threading, html, json
 
 app = Flask(__name__)
 
+app.config['MQTT_BROKER_URL'] = 'test.mosquitto.org'
 app.config['MQTT_BROKER_URL'] = 'engf0001.cs.ucl.ac.uk'
+
 app.config['MQTT_BROKER_PORT'] = 1883
 app.config['MQTT_USERNAME'] = ''  # Set this item when you need to verify username and password
 app.config['MQTT_PASSWORD'] = ''  # Set this item when you need to verify username and password
 app.config['MQTT_KEEPALIVE'] = 5  # Set KeepAlive time in seconds
 app.config['MQTT_TLS_ENABLED'] = False  # If your server supports TLS, set it True
-topic = 'bioreactor_sim/nofaults/telemetry/summary'
+topic = 'bioreactor_group_3/#'
 
 mqtt_client = Mqtt(app)
 
@@ -19,7 +22,7 @@ messages = []
 subscribers = set()
 subs_lock = threading.Lock()
 
-def _broadcast(item: str):
+def _broadcast(item):
     with subs_lock:
         for q in list(subscribers):
             try:
@@ -34,25 +37,39 @@ def handle_connect(client, userdata, flags, rc):
     if rc == 0:
         print('Connected')
         mqtt_client.subscribe(topic)
+        # mqtt_client.publish("bioreactor_group_3/set_points", '{"temperature_C": 32.0,"pH": 6.5,"rpm": 850.0}') # type: ignore
     else:
         print("Bad connection ", rc)
 
 @mqtt_client.on_message()
 def handle_mqtt_message(client, userdata, msg):
     try:
-        text = f"[{msg.topic}] {msg.payload.decode()}"
-        messages.append(text)
-        _broadcast(text)
-    except UnicodeDecodeError:
-        # print("Can't decode")
-        pass
+        payload_str = msg.payload.decode("utf-8")
+        data = json.loads(payload_str)
+        data["topic"] = msg.topic
+        data["timestamp"] = datetime.datetime.now().isoformat()
 
-
+        messages.append(data)
+        _broadcast(data)
+    except (UnicodeDecodeError, json.JSONDecodeError, TypeError) as e:
+        print("Failed to parse MQTT payload:", e)
+        fallback = {
+            "topic": msg.topic,
+            "raw_payload": repr(msg.payload),
+            "timestamp": datetime.datetime.now().isoformat(),
+            "error": "parse_failed",
+        }
+        messages.append(fallback)
+        _broadcast(fallback)
 
 @app.route('/publish', methods=['POST'])
 def publish_message():
-   request_data = request.get_json()
-   publish_result = mqtt_client.publish(request_data['topic'], request_data['msg'])
+   request_data = request.form.to_dict()
+   topic = 'bioreactor_group_3/set_points'
+   # Convert form data to JSON string for MQTT message
+   import json
+   msg = request.get_json()
+   publish_result = mqtt_client.publish(topic, json.dumps(msg))
    return jsonify({'code': publish_result[0]})
 
 @app.route('/index')
@@ -65,20 +82,18 @@ def events():
     with subs_lock:
         subscribers.add(client_q)
 
-    def _render(text: str) -> str:
-        return f'<div class="message">{html.escape(text)}</div>'
-
     def gen():
         try:
             # Suggest 1s reconnect delay
             yield 'retry: 1000\n\n'
             # Send last known message immediately if available
             if messages:
-                yield f"event: message\ndata: {_render(messages[-1])}\n\n"
+                last = messages[-1]
+                yield "event: message\ndata: " + json.dumps(last) + "\n\n"
             while True:
                 try:
                     item = client_q.get(timeout=15)
-                    yield f"event: message\ndata: {_render(item)}\n\n"
+                    yield "event: message\ndata: " + json.dumps(item) + "\n\n"
 
                 except queue.Empty:
                     # Heartbeat to keep connection alive
