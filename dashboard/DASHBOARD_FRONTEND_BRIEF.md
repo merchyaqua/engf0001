@@ -1,23 +1,110 @@
 # Dashboard Frontend Brief (HTML/JS & Charts)
 
-The Flask backend (`dashboard/app.py`) is configured to receive telemetry over MQTT and expose it to the browser via Server-Sent Events (SSE). Your job is to build a browser-based dashboard (HTML + JavaScript) that consumes this SSE stream and presents it as a live log and charts.
+The Flask backend (`dashboard/app.py`) is configured to receive telemetry over MQTT and expose it to the browser via Server-Sent Events (SSE). Next step is to build a browser-based dashboard (HTML + JavaScript) that consumes this SSE stream and presents it as a live log and charts.
 
 ## Backend behaviour
 
-- MQTT messages arrive on topic(s) under: `bioreactor_group_3/#`.
+- MQTT messages arrive on topic(s) under: `bioreactor_group_3/#`. Specifically `bioreactor_group_3/bioreactor_group_3/telemetry/summary` following the simulator format.
 - Each MQTT payload is a JSON string, for example:
 
-  ```json
-  {
-    "temperature_C": 32.0,
-    "pH": 6.5,
-    "rpm": 850.0
-  }
-  ```
+```json
+
+{
+    "window": {
+        "start": 1763389772,
+        "end": 1763389773,
+        "seconds": 1,
+        "samples": 11
+    },
+    "temperature_C": {
+        "mean": 31.490105741201127,
+        "min": 31.45392754641847,
+        "max": 31.547580592169197
+    },
+    "pH": {
+        "mean": 5.86476854225333,
+        "min": 5.6901628909742525,
+        "max": 6.0579492628174165
+    },
+    "rpm": {
+        "mean": 852.1920684351512,
+        "min": 831.4728702959867,
+        "max": 885.2556326766498
+    },
+    "actuators_avg": {
+        "heater_pwm": 0.44343035911546985,
+        "motor_pwm": 0.7372140612716371,
+        "acid_pwm": 0.0,
+        "base_pwm": 0.004120351000476273
+    },
+    "dosing_l": {
+        "acid": 5.247441644593267e-05,
+        "base": 6.07093325782289e-05
+    },
+    "heater_energy_Wh": 0.01751615804208144,
+    "photoevents": 32,
+    "setpoints": {
+        "temperature_C": 32.0,
+        "pH": 6.5,
+        "rpm": 850.0
+    },
+    "faults": {
+        "last_active": [],
+        "counts": {}
+    }
+}
+
+{
+    "window": {
+        "start": 1763389772,
+        "end": 1763389773,
+        "seconds": 1,
+        "samples": 11
+    },
+    "temperature_C": {
+        "mean": 31.490105741201127,
+        "min": 31.45392754641847,
+        "max": 31.547580592169197
+    },
+    "pH": {
+        "mean": 5.86476854225333,
+        "min": 5.6901628909742525,
+        "max": 6.0579492628174165
+    },
+    "rpm": {
+        "mean": 852.1920684351512,
+        "min": 831.4728702959867,
+        "max": 885.2556326766498
+    },
+    "actuators_avg": {
+        "heater_pwm": 0.44343035911546985,
+        "motor_pwm": 0.7372140612716371,
+        "acid_pwm": 0.0,
+        "base_pwm": 0.004120351000476273
+    },
+    "dosing_l": {
+        "acid": 5.247441644593267e-05,
+        "base": 6.07093325782289e-05
+    },
+    "heater_energy_Wh": 0.01751615804208144,
+    "photoevents": 32,
+    "setpoints": {
+        "temperature_C": 32.0,
+        "pH": 6.5,
+        "rpm": 850.0
+    },
+    "faults": {
+        "last_active": [],
+        "counts": {}
+    }
+}
+```
+
+
 
 - The server decodes this JSON in `handle_mqtt_message`, and enriches it with metadata:
 
-  - `topic`: the MQTT topic string (e.g. `"bioreactor_group_3/telemetry"`).
+  - `topic`: the MQTT topic string (e.g. `"bioreactor_group_3/telemetry/summary"`).
   - `timestamp`: ISO 8601 string generated server-side at receipt time.
 
 - A typical successful message object pushed to the frontend looks like:
@@ -27,7 +114,7 @@ The Flask backend (`dashboard/app.py`) is configured to receive telemetry over M
     "temperature_C": 32.0,
     "pH": 6.5,
     "rpm": 850.0,
-    "topic": "bioreactor_group_3/telemetry",
+    "topic": "bioreactor_group_3/telemetry/summary",
     "timestamp": "2025-03-21T12:34:56.789012"
   }
   ```
