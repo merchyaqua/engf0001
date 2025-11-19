@@ -1,6 +1,6 @@
-uses flask-mqtt
-receive summary data (since this is what's provided by the simulator) and esp32 should collect this data every second and publish it via mqtt.
-A new mqtt topic has to exist for communicating desired set points.
+mqttConnect.py contains code for setting up a connection and saving all received data into a list.
+app.py is for the web backend and dashboard.html is for the web frontend.
+
 Topic: [bioreactor_group_3/telemetry/summary] 
 Subscribed to by: client
 Publisher: ESP32

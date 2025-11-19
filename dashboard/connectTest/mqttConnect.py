@@ -1,20 +1,63 @@
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as paho
+from paho import mqtt
+import json
 
-BROKER = "test.mosquitto.org"   # public broker
-BROKER = 'engf0001.cs.ucl.ac.uk'
+BROKER = ""
 PORT = 1883
-TOPIC = "#"             # feel free to change
+TOPIC = ""
+USERNAME = "group3"
 
-def on_connect(client, userdata, flags, rc):
+
+broker_name = "ucl"
+
+match broker_name:
+    case "test":
+        BROKER = "test.mosquitto.org"   # public broker just to test connection
+    case "ucl":
+        BROKER = "engf0001.cs.ucl.ac.uk" # UCL broker for simulator data 
+
+        TOPIC = "bioreactor/nofaults/telemetry/summary"          
+
+    case _:
+        BROKER = "26063fe98ec0480d93ee20fbab5cf154.s1.eu.hivemq.cloud" # Non-UCL broker settings
+        PORT = 8883
+        USERNAME = "group3"
+        PASSWORD = "Group3abc"
+        TOPIC = "bioreactor_group_3/#"
+
+
+
+historical_data = []
+
+def save(topic, data) :
+    historical_data.append(data)
+
+def on_connect(client, userdata, flags, rc, properties=None):
     print("Connected with result code", rc)
     client.subscribe(TOPIC)
+    client.publish("bioreactor_group_3/set_points", '{"temperature_C": 32.0,"pH": 6.5,"rpm": 850.0}') # type: ignore
+
 
 def on_message(client, userdata, msg):
-    print(f"[{msg.topic}] {msg.payload.decode()}")
+    # The payload is a byte string, so we decode it to a regular string
+    decoded_payload = msg.payload.decode("utf-8")
+    # Convert JSON string to dictionary
+    
+    data = json.loads(decoded_payload)
+    print(type(data))
 
-client = mqtt.Client()
+    print(f"[{msg.topic}] {data}")
+    save(msg.topic, data)
+
+client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
+
+if broker_name == "nonucl":
+    client.username_pw_set(USERNAME, PASSWORD)
+    client.tls_set(cert_reqs=paho.ssl.CERT_REQUIRED, tls_version=paho.ssl.PROTOCOL_TLS_CLIENT)
+client.connect(BROKER, PORT, 60)
 client.on_connect = on_connect
 client.on_message = on_message
+client.on_publish = lambda client, userdata, mid: print("mid: "+str(mid))
 
-client.connect(BROKER, PORT, 60)
+
 client.loop_forever()
