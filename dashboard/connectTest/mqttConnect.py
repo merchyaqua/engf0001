@@ -16,7 +16,7 @@ match broker_name:
     case "ucl":
         BROKER = "engf0001.cs.ucl.ac.uk" # UCL broker for simulator data 
 
-        TOPIC = "bioreactor/nofaults/telemetry/summary"          
+        TOPIC = "bioreactor_sim/single_fault/telemetry/summary"         
 
     case _:
         BROKER = "26063fe98ec0480d93ee20fbab5cf154.s1.eu.hivemq.cloud" # Non-UCL broker settings

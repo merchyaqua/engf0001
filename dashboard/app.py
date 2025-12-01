@@ -3,6 +3,8 @@ from flask import Flask, request, jsonify, render_template, Response, stream_wit
 from flask_mqtt import Mqtt
 import time, queue, threading, html, json
 
+#bioreactor_sim/nofaults/telemetry/summary
+
 app = Flask(__name__)
 
 app.config['MQTT_BROKER_URL'] = 'test.mosquitto.org'
@@ -13,11 +15,12 @@ app.config['MQTT_USERNAME'] = ''  # Set this item when you need to verify userna
 app.config['MQTT_PASSWORD'] = ''  # Set this item when you need to verify username and password
 app.config['MQTT_KEEPALIVE'] = 5  # Set KeepAlive time in seconds
 app.config['MQTT_TLS_ENABLED'] = False  # If your server supports TLS, set it True
-topic = 'bioreactor_group_3/#'
+topic = 'bioreactor_sim/three_faults/telemetry/summary'
 
 mqtt_client = Mqtt(app)
 
 messages = []
+    
 # Per-client queues for SSE subscribers
 subscribers = set()
 subs_lock = threading.Lock()

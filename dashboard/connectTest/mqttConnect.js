@@ -1,7 +1,7 @@
 // import mqtt from "mqtt";
 
 const url = "mqtt://engf0001.cs.ucl.ac.uk:1883/mqtt";
-const topic = "bioreactor_sim/nofaults/telemetry/summary";
+const topic = "bioreactor_sim/singlefaults/telemetry/summary";
 // Connect
 const client = mqtt.connect(url, (options = {}));
 // Subscribe to normal data streams
