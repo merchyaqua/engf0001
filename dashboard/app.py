@@ -149,8 +149,16 @@ def handle_connect(client, userdata, flags, rc):
     if rc == 0:
         print('Connected')
         mqtt_client.subscribe(topic)
-        # mqtt_client.publish("bioreactor_group_3/stream", '') # type: ignore
-        sample = '''
+        mqtt_client.publish("bioreactor_group_3/set_points", """{
+                                                                    "temperature_C": 32.0,
+                                                                    "pH": 6.5,
+                                                                    "rpm": 850.0
+                                                                }""") # type: ignore
+
+    else:
+        print("Bad connection ", rc)
+def fake_telemetry():
+    sample = '''
 
         {
             "temperature_C": {
@@ -163,12 +171,8 @@ def handle_connect(client, userdata, flags, rc):
                 "mean": 852.1920684351512
             }
         }'''
-        mqtt_client.publish("bioreactor_group_3/telemetry/summary", sample) # type: ignore
-        mqtt_client.publish("bioreactor_group_3/set_points", ) # type: ignore
-
-    else:
-        print("Bad connection ", rc)
-
+    mqtt_client.publish("bioreactor_group_3/telemetry/summary", sample) # type: ignore
+        
 @mqtt_client.on_message()
 def handle_mqtt_message(client, userdata, msg):
     try:
@@ -234,6 +238,8 @@ def events():
         'Cache-Control': 'no-cache',
         'X-Accel-Buffering': 'no',
     }
+    # A test data point just to verify it's working. Delete in production!
+    fake_telemetry()
     return Response(stream_with_context(gen()), mimetype='text/event-stream', headers=headers)
 
 
