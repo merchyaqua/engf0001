@@ -448,6 +448,8 @@
             const temp = data.temperature_C?.mean;
             const ph = data.pH?.mean;
             const rpm = data.rpm?.mean;
+            const topic = data.topic
+            if (topic == "bio")
 
             if (temp !== undefined && ph !== undefined && rpm !== undefined) {
               // Add to message log

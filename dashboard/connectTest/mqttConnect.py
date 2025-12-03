@@ -8,7 +8,7 @@ TOPIC = ""
 USERNAME = "group3"
 
 
-broker_name = "ucl"
+broker_name = "nonucl"
 
 match broker_name:
     case "test":
@@ -18,7 +18,7 @@ match broker_name:
 
         TOPIC = "bioreactor_sim/single_fault/telemetry/summary"         
 
-    case _:
+    case nonucl:
         BROKER = "26063fe98ec0480d93ee20fbab5cf154.s1.eu.hivemq.cloud" # Non-UCL broker settings
         PORT = 8883
         USERNAME = "group3"
@@ -34,8 +34,21 @@ def save(topic, data) :
 
 def on_connect(client, userdata, flags, rc, properties=None):
     print("Connected with result code", rc)
+    sample = '''
+
+{
+    "temperature_C": {
+        "mean": 31.490105741201127
+    },
+    "pH": {
+        "mean": 5.86476854225333
+    },
+    "rpm": {
+        "mean": 852.1920684351512
+    }
+}'''
     client.subscribe(TOPIC)
-    client.publish("bioreactor_group_3/set_points", '{"temperature_C": 32.0,"pH": 6.5,"rpm": 850.0}') # type: ignore
+    client.publish("bioreactor_group_3/set_points", sample) # type: ignore
 
 
 def on_message(client, userdata, msg):
