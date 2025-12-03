@@ -27,7 +27,7 @@ match broker_name:
         PORT = 8883
         USERNAME = "group3"
         PASSWORD = "Group3abc"
-        TOPIC = "bioreactor_group_3/#"
+        TOPIC = "bioreactor_group_3/telemetry/summary"
         app.config['MQTT_USERNAME'] = USERNAME  # Set this item when you need to verify username and password
         app.config['MQTT_PASSWORD'] = PASSWORD  # Set this item when you need to verify username and password
         app.config['MQTT_TLS_ENABLED'] = True  # If your server supports TLS, set it True
