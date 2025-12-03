@@ -4,7 +4,6 @@ from flask_mqtt import Mqtt
 import time, queue, threading, html, json
 import sqlite3
 
-import git
 #bioreactor_sim/nofaults/telemetry/summary
 
 app = Flask(__name__)
@@ -153,15 +152,6 @@ def events():
     }
     return Response(stream_with_context(gen()), mimetype='text/event-stream', headers=headers)
 
-@app.route('/update_server', methods=['POST'])
-def webhook():
-    if request.method == 'POST':
-        repo = git.Repo('path/to/git_repo')
-        origin = repo.remotes.origin
-        origin.pull()
-        return 'Updated PythonAnywhere successfully', 200
-    else:
-        return 'Wrong event type', 400
 
 
 if __name__ == '__main__':

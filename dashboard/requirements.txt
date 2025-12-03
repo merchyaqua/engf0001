@@ -12,3 +12,4 @@ paho-mqtt==1.6.1
 setuptools==80.9.0
 Werkzeug 
 wheel==0.45.1
+git
