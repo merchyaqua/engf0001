@@ -13,3 +13,5 @@ setuptools==80.9.0
 Werkzeug 
 wheel==0.45.1
 gunicorn
+gevent
+greenlet
