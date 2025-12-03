@@ -2,7 +2,6 @@
 # $ conda create --name <env> --file <this file>
 # platform: win-64
 # created-by: conda 24.11.3
-anaconda-anon-usage=0.4.4=py312hfc23b7f_100
 archspec=0.2.3=pyhd3eb1b0_0
 blas=1.0=mkl
 boltons=23.0.0=py312haa95532_0

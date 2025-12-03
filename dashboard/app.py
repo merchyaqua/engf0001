@@ -2,10 +2,13 @@ import datetime
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context
 from flask_mqtt import Mqtt
 import time, queue, threading, html, json
+import sqlite3
 
+import git
 #bioreactor_sim/nofaults/telemetry/summary
 
 app = Flask(__name__)
+
 
 app.config['MQTT_BROKER_URL'] = 'test.mosquitto.org'
 app.config['MQTT_BROKER_URL'] = 'engf0001.cs.ucl.ac.uk'
@@ -24,6 +27,45 @@ messages = []
 # Per-client queues for SSE subscribers
 subscribers = set()
 subs_lock = threading.Lock()
+
+def database_setup():
+#         // Source - https://stackoverflow.com/a
+#     // Posted by sjw
+#     // Retrieved 2025-12-01, License - CC BY-SA 4.0
+
+
+    with open('database.sql', 'r') as sql_file:
+        sql_script = sql_file.read()
+
+    db = sqlite3.connect('database.db')
+    cursor = db.cursor()
+    cursor.executescript(sql_script)
+    db.commit()
+    db.close()
+
+database_setup()
+
+
+def save(data):
+    ts_start = data["window"]["start"]
+    ts_end   = data["window"]["end"]
+
+    db = sqlite3.connect("database.db")
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO reactor_summary (ts_start, ts_end, raw_json)
+        VALUES (?, ?, ?)
+    """, (
+        ts_start,
+        ts_end,
+        json.dumps(data)
+    ))
+
+    db.commit()
+    db.close()
+
+
 
 def _broadcast(item):
     with subs_lock:
@@ -52,7 +94,7 @@ def handle_mqtt_message(client, userdata, msg):
         data["topic"] = msg.topic
         data["timestamp"] = datetime.datetime.now().isoformat()
 
-        messages.append(data)
+        save(data)
         _broadcast(data)
     except (UnicodeDecodeError, json.JSONDecodeError, TypeError) as e:
         print("Failed to parse MQTT payload:", e)
@@ -110,6 +152,16 @@ def events():
         'X-Accel-Buffering': 'no',
     }
     return Response(stream_with_context(gen()), mimetype='text/event-stream', headers=headers)
+
+@app.route('/update_server', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        repo = git.Repo('path/to/git_repo')
+        origin = repo.remotes.origin
+        origin.pull()
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
 
 if __name__ == '__main__':

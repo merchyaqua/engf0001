@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS reactor_summary (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts_start INTEGER NOT NULL,
+    ts_end   INTEGER NOT NULL,
+    raw_json TEXT NOT NULL
+);
