@@ -1,23 +1,45 @@
 import datetime
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context
-from flask_mqtt import Mqtt
+from flask_mqtt import Mqtt, ssl
 import time, queue, threading, html, json
 import sqlite3
 
 #bioreactor_sim/nofaults/telemetry/summary
 
 app = Flask(__name__)
+BROKER = ""
+PORT = 1883
+TOPIC = ""
+USERNAME = "group3"
+
+broker_name = "hivemq"
+
+match broker_name:
+    case "test":
+        BROKER = "test.mosquitto.org"   # public broker just to test connection
+    case "ucl":
+        BROKER = "engf0001.cs.ucl.ac.uk" # UCL broker for simulator data 
+
+        TOPIC = "bioreactor_sim/single_fault/telemetry/summary"         
+
+    case _:
+        BROKER = "26063fe98ec0480d93ee20fbab5cf154.s1.eu.hivemq.cloud" # Non-UCL broker settings
+        PORT = 8883
+        USERNAME = "group3"
+        PASSWORD = "Group3abc"
+        TOPIC = "bioreactor_group_3/#"
+        app.config['MQTT_USERNAME'] = USERNAME  # Set this item when you need to verify username and password
+        app.config['MQTT_PASSWORD'] = PASSWORD  # Set this item when you need to verify username and password
+        app.config['MQTT_TLS_ENABLED'] = True  # If your server supports TLS, set it True
+        app.config['MQTT_TLS_CERT_REQS'] = ssl.CERT_REQUIRED
+        app.config['MQTT_TLS_VERSION'] =ssl.PROTOCOL_TLS_CLIENT
 
 
-app.config['MQTT_BROKER_URL'] = 'test.mosquitto.org'
-app.config['MQTT_BROKER_URL'] = 'engf0001.cs.ucl.ac.uk'
-
-app.config['MQTT_BROKER_PORT'] = 1883
-app.config['MQTT_USERNAME'] = ''  # Set this item when you need to verify username and password
-app.config['MQTT_PASSWORD'] = ''  # Set this item when you need to verify username and password
+app.config['MQTT_BROKER_URL'] = BROKER
+app.config['MQTT_BROKER_PORT'] = PORT
 app.config['MQTT_KEEPALIVE'] = 5  # Set KeepAlive time in seconds
-app.config['MQTT_TLS_ENABLED'] = False  # If your server supports TLS, set it True
-topic = 'bioreactor_sim/three_faults/telemetry/summary'
+topic = TOPIC
+print(topic)
 
 mqtt_client = Mqtt(app)
 
@@ -46,23 +68,25 @@ database_setup()
 
 
 def save(data):
-    ts_start = data["window"]["start"]
-    ts_end   = data["window"]["end"]
+    # ts_start = data["window"]["start"]
+    # ts_end   = data["window"]["end"]
 
-    db = sqlite3.connect("database.db")
-    cursor = db.cursor()
+    # db = sqlite3.connect("database.db")
+    # cursor = db.cursor()
 
-    cursor.execute("""
-        INSERT INTO reactor_summary (ts_start, ts_end, raw_json)
-        VALUES (?, ?, ?)
-    """, (
-        ts_start,
-        ts_end,
-        json.dumps(data)
-    ))
+    # cursor.execute("""
+    #     INSERT INTO reactor_summary (ts_start, ts_end, raw_json)
+    #     VALUES (?, ?, ?)
+    # """, (
+    #     ts_start,
+    #     ts_end,
+    #     json.dumps(data)
+    # ))
 
-    db.commit()
-    db.close()
+    # db.commit()
+    # db.close()
+    print(data)
+    return
 
 
 
@@ -78,10 +102,70 @@ def _broadcast(item):
 
 @mqtt_client.on_connect()
 def handle_connect(client, userdata, flags, rc):
+    sample_stream = '''    "window": {
+        "start": 1763389772,
+        "end": 1763389773,
+        "seconds": 1,
+        "samples": 11
+    },
+    "temperature_C": {
+        "mean": 31.490105741201127,
+        "min": 31.45392754641847,
+        "max": 31.547580592169197
+    },
+    "pH": {
+        "mean": 5.86476854225333,
+        "min": 5.6901628909742525,
+        "max": 6.0579492628174165
+    },
+    "rpm": {
+        "mean": 852.1920684351512,
+        "min": 831.4728702959867,
+        "max": 885.2556326766498
+    },
+    "actuators_avg": {
+        "heater_pwm": 0.44343035911546985,
+        "motor_pwm": 0.7372140612716371,
+        "acid_pwm": 0.0,
+        "base_pwm": 0.004120351000476273
+    },
+    "dosing_l": {
+        "acid": 5.247441644593267e-05,
+        "base": 6.07093325782289e-05
+    },
+    "heater_energy_Wh": 0.01751615804208144,
+    "photoevents": 32,
+    "setpoints": {
+        "temperature_C": 32.0,
+        "pH": 6.5,
+        "rpm": 850.0
+    },
+    "faults": {
+        "last_active": [],
+        "counts": {}
+    }
+'''
+    print("tried to connect")
     if rc == 0:
         print('Connected')
         mqtt_client.subscribe(topic)
-        # mqtt_client.publish("bioreactor_group_3/set_points", '{"temperature_C": 32.0,"pH": 6.5,"rpm": 850.0}') # type: ignore
+        # mqtt_client.publish("bioreactor_group_3/stream", '') # type: ignore
+        sample = '''
+
+        {
+            "temperature_C": {
+                "mean": 31.490105741201127
+            },
+            "pH": {
+                "mean": 5.86476854225333
+            },
+            "rpm": {
+                "mean": 852.1920684351512
+            }
+        }'''
+        mqtt_client.publish("bioreactor_group_3/telemetry/summary", sample) # type: ignore
+        mqtt_client.publish("bioreactor_group_3/set_points", ) # type: ignore
+
     else:
         print("Bad connection ", rc)
 
