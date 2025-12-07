@@ -242,6 +242,6 @@ def events():
 
 if __name__ == '__main__':
    app.run(host='127.0.0.1', port=5000, threaded=True, debug=True)
-if __name__ != "__main__":
+else:
     print("hey you worked")
-    mqtt_client.client.loop_start()
+    mqtt_client.client.loop_forever()
