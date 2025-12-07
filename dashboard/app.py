@@ -42,6 +42,7 @@ topic = TOPIC
 print(topic)
 
 mqtt_client = Mqtt(app)
+print("mqtt client object =", mqtt_client.client)
 
 messages = []
     
@@ -236,7 +237,10 @@ def events():
     }
     return Response(stream_with_context(gen()), mimetype='text/event-stream', headers=headers)
 
+# print("__name__ is", __name__)
 
 
 if __name__ == '__main__':
    app.run(host='127.0.0.1', port=5000, threaded=True, debug=True)
+if __name__ != "__main__":
+    mqtt_client.client.loop_start()
