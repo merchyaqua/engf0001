@@ -201,7 +201,7 @@ def publish_message():
    publish_result = mqtt_client.publish(topic, json.dumps(msg))
    return jsonify({'code': publish_result[0]})
 
-@app.route('/')
+@app.route('/index')
 def index():
     return render_template("dashboard.html")
 
@@ -242,6 +242,6 @@ def events():
 
 if __name__ == '__main__':
    app.run(host='127.0.0.1', port=5000, threaded=True, debug=True)
-else:
+if __name__ != "__main__":
     print("hey you worked")
-    mqtt_client.client.loop_forever()
+    mqtt_client.client.loop_start()
