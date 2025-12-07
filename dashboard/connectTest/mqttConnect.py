@@ -39,13 +39,13 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 {
     "temperature_C": {
-        "mean": 32
+        "mean": 100
     },
     "pH": {
-        "mean": 5.86476854225333
+        "mean": 100
     },
     "rpm": {
-        "mean": 852.1920684351512
+        "mean": 100
     }
 }'''
     client.subscribe(TOPIC)

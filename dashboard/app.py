@@ -164,8 +164,8 @@ def handle_connect(client, userdata, flags, rc):
                 "mean": 852.1920684351512
             }
         }'''
-        mqtt_client.publish("bioreactor_group_3/telemetry/summary", sample) # type: ignore
-        mqtt_client.publish("bioreactor_group_3/set_points", ) # type: ignore
+        # mqtt_client.publish("bioreactor_group_3/telemetry/summary", sample) # type: ignore
+        # mqtt_client.publish("bioreactor_group_3/set_points", ) # type: ignore
 
     else:
         print("Bad connection ", rc)
@@ -243,4 +243,5 @@ def events():
 if __name__ == '__main__':
    app.run(host='127.0.0.1', port=5000, threaded=True, debug=True)
 if __name__ != "__main__":
+    print("hey you worked")
     mqtt_client.client.loop_start()
