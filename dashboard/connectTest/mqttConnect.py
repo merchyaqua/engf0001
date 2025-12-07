@@ -1,6 +1,7 @@
 import paho.mqtt.client as paho
 from paho import mqtt
 import json
+import time
 
 BROKER = ""
 PORT = 1883
@@ -38,7 +39,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 {
     "temperature_C": {
-        "mean": 31.490105741201127
+        "mean": 32
     },
     "pH": {
         "mean": 5.86476854225333
@@ -48,7 +49,10 @@ def on_connect(client, userdata, flags, rc, properties=None):
     }
 }'''
     client.subscribe(TOPIC)
-    client.publish("bioreactor_group_3/set_points", sample) # type: ignore
+    for i in range(1):
+        # time.sleep(1)
+        client.publish("bioreactor_group_3/telemetry/summary", sample) # type: ignore
+
 
 
 def on_message(client, userdata, msg):

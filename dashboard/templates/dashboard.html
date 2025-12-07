@@ -20,7 +20,7 @@
         padding: 20px;
         border-radius: 8px;
         margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .control-section h2 {
         margin-top: 0;
@@ -54,13 +54,13 @@
         background: white;
         padding: 15px;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .messages-section {
         background: white;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .messages-section h2 {
         margin-top: 0;
@@ -69,7 +69,7 @@
       #messages {
         max-height: 400px;
         overflow-y: auto;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
         font-size: 12px;
         background: #f8f9fa;
         padding: 10px;
@@ -109,7 +109,7 @@
   </head>
   <body>
     <h1>🧬 Bioreactor Dashboard</h1>
-    
+
     <div id="connectionStatus" class="connection-status status-connecting">
       Connecting to server...
     </div>
@@ -120,17 +120,44 @@
       <form id="controlForm">
         <div class="slider-group">
           <label for="temperature_C">Temperature (°C):</label>
-          <input type="range" id="temperature_C" name="temperature_C" min="25" max="35" value="30" step="0.1" oninput="this.nextElementSibling.textContent = this.value">
+          <input
+            type="range"
+            id="temperature_C"
+            name="temperature_C"
+            min="25"
+            max="35"
+            value="30"
+            step="0.1"
+            oninput="this.nextElementSibling.textContent = this.value"
+          />
           <span>30</span>
         </div>
         <div class="slider-group">
           <label for="pH">pH:</label>
-          <input type="range" id="pH" name="pH" min="5" max="7" value="6.5" step="0.1" oninput="this.nextElementSibling.textContent = this.value">
+          <input
+            type="range"
+            id="pH"
+            name="pH"
+            min="5"
+            max="7"
+            value="6.5"
+            step="0.1"
+            oninput="this.nextElementSibling.textContent = this.value"
+          />
           <span>6.5</span>
         </div>
         <div class="slider-group">
           <label for="rpm">RPM:</label>
-          <input type="range" id="rpm" name="rpm" min="500" max="1500" value="850" step="1" oninput="this.nextElementSibling.textContent = this.value">
+          <input
+            type="range"
+            id="rpm"
+            name="rpm"
+            min="500"
+            max="1500"
+            value="850"
+            step="1"
+            oninput="this.nextElementSibling.textContent = this.value"
+          />
           <span>850</span>
         </div>
       </form>
@@ -162,209 +189,225 @@
       const MAX_DATA_POINTS = 500;
 
       // Connection status management
-      const statusDiv = document.getElementById('connectionStatus');
+      const statusDiv = document.getElementById("connectionStatus");
       function updateConnectionStatus(status) {
-        statusDiv.className = 'connection-status status-' + status;
+        statusDiv.className = "connection-status status-" + status;
         const messages = {
-          'connecting': 'Connecting to server...',
-          'connected': '✓ Connected to telemetry stream',
-          'disconnected': '✗ Disconnected - Attempting to reconnect...'
+          connecting: "Connecting to server...",
+          connected: "✓ Connected to telemetry stream",
+          disconnected: "✗ Disconnected - Attempting to reconnect...",
         };
         statusDiv.textContent = messages[status] || status;
       }
 
       // Initialize ApexCharts
       const temperatureOptions = {
-        series: [{
-          name: 'Temperature',
-          data: []
-        }],
+        series: [
+          {
+            name: "Temperature",
+            data: [],
+          },
+        ],
         chart: {
-          type: 'line',
+          type: "line",
           height: 250,
           animations: {
             enabled: true,
-            easing: 'linear',
+            easing: "linear",
             dynamicAnimation: {
-              speed: 1000
-            }
+              speed: 1000,
+            },
           },
           toolbar: {
-            show: false
+            show: false,
           },
           zoom: {
-            enabled: false
-          }
+            enabled: false,
+          },
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
         stroke: {
-          curve: 'smooth',
-          width: 2
+          curve: "smooth",
+          width: 2,
         },
         title: {
-          text: 'Temperature (°C)',
-          align: 'left',
+          text: "Temperature (°C)",
+          align: "left",
           style: {
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }
+            fontSize: "16px",
+            fontWeight: "bold",
+          },
         },
-        colors: ['#ff6384'],
+        colors: ["#ff6384"],
         xaxis: {
-          type: 'datetime',
+          type: "datetime",
           labels: {
-            datetimeUTC: false
-          }
+            datetimeUTC: false,
+          },
         },
         yaxis: {
           title: {
-            text: '°C'
+            text: "°C",
           },
-          decimalsInFloat: 2
+          decimalsInFloat: 2,
         },
         tooltip: {
           x: {
-            format: 'HH:mm:ss'
-          }
-        }
+            format: "HH:mm:ss",
+          },
+        },
       };
 
       const phOptions = {
-        series: [{
-          name: 'pH',
-          data: []
-        }],
+        series: [
+          {
+            name: "pH",
+            data: [],
+          },
+        ],
         chart: {
-          type: 'line',
+          type: "line",
           height: 250,
           animations: {
             enabled: true,
-            easing: 'linear',
+            easing: "linear",
             dynamicAnimation: {
-              speed: 1000
-            }
+              speed: 1000,
+            },
           },
           toolbar: {
-            show: false
+            show: false,
           },
           zoom: {
-            enabled: false
-          }
+            enabled: false,
+          },
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
         stroke: {
-          curve: 'smooth',
-          width: 2
+          curve: "smooth",
+          width: 2,
         },
         title: {
-          text: 'pH Level',
-          align: 'left',
+          text: "pH Level",
+          align: "left",
           style: {
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }
+            fontSize: "16px",
+            fontWeight: "bold",
+          },
         },
-        colors: ['#36a2eb'],
+        colors: ["#36a2eb"],
         xaxis: {
-          type: 'datetime',
+          type: "datetime",
           labels: {
-            datetimeUTC: false
-          }
+            datetimeUTC: false,
+          },
         },
         yaxis: {
           title: {
-            text: 'pH'
+            text: "pH",
           },
-          decimalsInFloat: 2
+          decimalsInFloat: 2,
         },
         tooltip: {
           x: {
-            format: 'HH:mm:ss'
-          }
-        }
+            format: "HH:mm:ss",
+          },
+        },
       };
 
       const rpmOptions = {
-        series: [{
-          name: 'RPM',
-          data: []
-        }],
+        series: [
+          {
+            name: "RPM",
+            data: [],
+          },
+        ],
         chart: {
-          type: 'line',
+          type: "line",
           height: 250,
           animations: {
             enabled: true,
-            easing: 'linear',
+            easing: "linear",
             dynamicAnimation: {
-              speed: 1000
-            }
+              speed: 1000,
+            },
           },
           toolbar: {
-            show: false
+            show: false,
           },
           zoom: {
-            enabled: false
-          }
+            enabled: false,
+          },
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
         stroke: {
-          curve: 'smooth',
-          width: 2
+          curve: "smooth",
+          width: 2,
         },
         title: {
-          text: 'Motor Speed (RPM)',
-          align: 'left',
+          text: "Motor Speed (RPM)",
+          align: "left",
           style: {
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }
+            fontSize: "16px",
+            fontWeight: "bold",
+          },
         },
-        colors: ['#4bc0c0'],
+        colors: ["#4bc0c0"],
         xaxis: {
-          type: 'datetime',
+          type: "datetime",
           labels: {
-            datetimeUTC: false
-          }
+            datetimeUTC: false,
+          },
         },
         yaxis: {
           title: {
-            text: 'RPM'
+            text: "RPM",
           },
           decimalsInFloat: 0,
           min: 0,
-          max: 2000
+          max: 2000,
         },
         tooltip: {
           x: {
-            format: 'HH:mm:ss'
-          }
-        }
+            format: "HH:mm:ss",
+          },
+        },
       };
 
       // Create chart instances
-      const temperatureChart = new ApexCharts(document.querySelector("#temperatureChart"), temperatureOptions);
-      const phChart = new ApexCharts(document.querySelector("#phChart"), phOptions);
-      const rpmChart = new ApexCharts(document.querySelector("#rpmChart"), rpmOptions);
+      const temperatureChart = new ApexCharts(
+        document.querySelector("#temperatureChart"),
+        temperatureOptions
+      );
+      const phChart = new ApexCharts(
+        document.querySelector("#phChart"),
+        phOptions
+      );
+      const rpmChart = new ApexCharts(
+        document.querySelector("#rpmChart"),
+        rpmOptions
+      );
 
       temperatureChart.render();
       phChart.render();
       rpmChart.render();
 
       // Messages container
-      const messagesDiv = document.getElementById('messages');
+      const messagesDiv = document.getElementById("messages");
 
       // Function to add message to log
       function addMessageToLog(message, isError = false) {
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message-line ' + (isError ? 'message-error' : 'message-normal');
+        const messageElement = document.createElement("div");
+        messageElement.className =
+          "message-line " + (isError ? "message-error" : "message-normal");
         messageElement.textContent = message;
-        
+
         // Prepend to messages (newest first)
         if (messagesDiv.firstChild) {
           messagesDiv.insertBefore(messageElement, messagesDiv.firstChild);
@@ -383,44 +426,73 @@
         const time = new Date(timestamp).getTime();
 
         // Update temperature chart
-        temperatureChart.appendData([{
-          data: [{
-            x: time,
-            y: temperature
-          }]
-        }]);
+        temperatureChart.appendData([
+          {
+            data: [
+              {
+                x: time,
+                y: temperature,
+              },
+            ],
+          },
+        ]);
 
         // Update pH chart
-        phChart.appendData([{
-          data: [{
-            x: time,
-            y: pH
-          }]
-        }]);
+        phChart.appendData([
+          {
+            data: [
+              {
+                x: time,
+                y: pH,
+              },
+            ],
+          },
+        ]);
 
         // Update RPM chart
-        rpmChart.appendData([{
-          data: [{
-            x: time,
-            y: rpm
-          }]
-        }]);
+        rpmChart.appendData([
+          {
+            data: [
+              {
+                x: time,
+                y: rpm,
+              },
+            ],
+          },
+        ]);
 
         // Trim data if exceeds max points
         if (temperatureChart.w.config.series[0].data.length > MAX_DATA_POINTS) {
-          temperatureChart.updateSeries([{
-            data: temperatureChart.w.config.series[0].data.slice(-MAX_DATA_POINTS)
-          }], false);
+          temperatureChart.updateSeries(
+            [
+              {
+                data: temperatureChart.w.config.series[0].data.slice(
+                  -MAX_DATA_POINTS
+                ),
+              },
+            ],
+            false
+          );
         }
         if (phChart.w.config.series[0].data.length > MAX_DATA_POINTS) {
-          phChart.updateSeries([{
-            data: phChart.w.config.series[0].data.slice(-MAX_DATA_POINTS)
-          }], false);
+          phChart.updateSeries(
+            [
+              {
+                data: phChart.w.config.series[0].data.slice(-MAX_DATA_POINTS),
+              },
+            ],
+            false
+          );
         }
         if (rpmChart.w.config.series[0].data.length > MAX_DATA_POINTS) {
-          rpmChart.updateSeries([{
-            data: rpmChart.w.config.series[0].data.slice(-MAX_DATA_POINTS)
-          }], false);
+          rpmChart.updateSeries(
+            [
+              {
+                data: rpmChart.w.config.series[0].data.slice(-MAX_DATA_POINTS),
+              },
+            ],
+            false
+          );
         }
       }
 
@@ -428,16 +500,16 @@
       let eventSource;
 
       function connectSSE() {
-        updateConnectionStatus('connecting');
-        
-        eventSource = new EventSource('/events');
+        updateConnectionStatus("connecting");
 
-        eventSource.addEventListener('message', function(event) {
+        eventSource = new EventSource("/events");
+
+        eventSource.addEventListener("message", function (event) {
           try {
             const data = JSON.parse(event.data);
 
             // Check if this is an error message
-            if (data.error === 'parse_failed') {
+            if (data.error === "parse_failed") {
               const errorMsg = `${data.timestamp} [parse_failed] ${data.raw_payload}`;
               addMessageToLog(errorMsg, true);
               return;
@@ -448,12 +520,12 @@
             const temp = data.temperature_C?.mean;
             const ph = data.pH?.mean;
             const rpm = data.rpm?.mean;
-            const topic = data.topic
-            if (topic == "bio")
 
             if (temp !== undefined && ph !== undefined && rpm !== undefined) {
               // Add to message log
-              const logMsg = `${timestamp} T=${temp.toFixed(2)}°C pH=${ph.toFixed(2)} rpm=${rpm.toFixed(0)}`;
+              const logMsg = `${timestamp} T=${temp.toFixed(
+                2
+              )}°C pH=${ph.toFixed(2)} rpm=${rpm.toFixed(0)}`;
               addMessageToLog(logMsg, false);
 
               // Update charts
@@ -463,22 +535,24 @@
               const warnMsg = `${timestamp} [warning] Incomplete telemetry data`;
               addMessageToLog(warnMsg, true);
             }
-
           } catch (error) {
-            console.error('Error parsing SSE data:', error);
-            addMessageToLog(`${new Date().toISOString()} [error] Failed to parse message`, true);
+            console.error("Error parsing SSE data:", error);
+            addMessageToLog(
+              `${new Date().toISOString()} [error] Failed to parse message`,
+              true
+            );
           }
         });
 
-        eventSource.onopen = function() {
-          updateConnectionStatus('connected');
-          console.log('SSE connection established');
+        eventSource.onopen = function () {
+          updateConnectionStatus("connected");
+          console.log("SSE connection established");
         };
 
-        eventSource.onerror = function(error) {
-          console.error('SSE error:', error);
-          updateConnectionStatus('disconnected');
-          
+        eventSource.onerror = function (error) {
+          console.error("SSE error:", error);
+          updateConnectionStatus("disconnected");
+
           // EventSource will automatically attempt to reconnect
         };
       }
@@ -487,35 +561,37 @@
       connectSSE();
 
       // Control form handler (keep existing functionality)
-      document.getElementById('controlForm').addEventListener('change', function(e) {
-        const form = e.target.form;
-        const data = {
-          temperature_C: parseFloat(form.temperature_C.value),
-          pH: parseFloat(form.pH.value),
-          rpm: parseInt(form.rpm.value)
-        };
-        
-        fetch('/publish', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
-        .then(response => {
-          if (response.ok) {
-            console.log('Setpoints published:', data);
-          } else {
-            console.error('Failed to publish setpoints');
-          }
-        })
-        .catch(error => {
-          console.error('Error publishing setpoints:', error);
+      document
+        .getElementById("controlForm")
+        .addEventListener("change", function (e) {
+          const form = e.target.form;
+          const data = {
+            temperature_C: parseFloat(form.temperature_C.value),
+            pH: parseFloat(form.pH.value),
+            rpm: parseInt(form.rpm.value),
+          };
+
+          fetch("/publish", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => {
+              if (response.ok) {
+                console.log("Setpoints published:", data);
+              } else {
+                console.error("Failed to publish setpoints");
+              }
+            })
+            .catch((error) => {
+              console.error("Error publishing setpoints:", error);
+            });
         });
-      });
 
       // Cleanup on page unload
-      window.addEventListener('beforeunload', function() {
+      window.addEventListener("beforeunload", function () {
         if (eventSource) {
           eventSource.close();
         }
