@@ -201,7 +201,7 @@ def publish_message():
    publish_result = mqtt_client.publish(topic, json.dumps(msg))
    return jsonify({'code': publish_result[0]})
 
-@app.route('/index')
+@app.route('/')
 def index():
     return render_template("dashboard.html")
 
