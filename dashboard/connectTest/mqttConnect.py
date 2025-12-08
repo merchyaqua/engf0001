@@ -9,7 +9,7 @@ TOPIC = ""
 USERNAME = "group3"
 
 
-broker_name = "nonucl"
+broker_name = "ucl"
 
 match broker_name:
     case "test":
@@ -17,14 +17,16 @@ match broker_name:
     case "ucl":
         BROKER = "engf0001.cs.ucl.ac.uk" # UCL broker for simulator data 
 
-        TOPIC = "bioreactor_sim/single_fault/telemetry/summary"         
+        # TOPIC = "bioreactor_sim/single_fault/telemetry/summary"
+        TOPIC = "bioreactor_group_3/#"         
 
     case nonucl:
         BROKER = "26063fe98ec0480d93ee20fbab5cf154.s1.eu.hivemq.cloud" # Non-UCL broker settings
         PORT = 8883
         USERNAME = "group3"
         PASSWORD = "Group3abc"
-        TOPIC = "bioreactor_group_3/#"
+        TOPIC = "#"
+
 
 
 

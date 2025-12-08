@@ -12,15 +12,14 @@ PORT = 1883
 TOPIC = ""
 USERNAME = "group3"
 
-broker_name = "hivemq"
+broker_name = "ucl"
 
 match broker_name:
     case "test":
         BROKER = "test.mosquitto.org"   # public broker just to test connection
     case "ucl":
-        BROKER = "engf0001.cs.ucl.ac.uk" # UCL broker for simulator data 
-
-        TOPIC = "bioreactor_sim/single_fault/telemetry/summary"         
+        BROKER = "engf0001.cs.ucl.ac.uk" # subscribe to telemetry
+        TOPIC = "bioreactor_group_3/telemetry/summary"         
 
     case _:
         BROKER = "26063fe98ec0480d93ee20fbab5cf154.s1.eu.hivemq.cloud" # Non-UCL broker settings
@@ -194,11 +193,11 @@ def handle_mqtt_message(client, userdata, msg):
 @app.route('/publish', methods=['POST'])
 def publish_message():
    request_data = request.form.to_dict()
-   topic = 'bioreactor_group_3/set_points'
+   topic_publish_setpoints = 'bioreactor_group_3/set_points'
    # Convert form data to JSON string for MQTT message
    import json
    msg = request.get_json()
-   publish_result = mqtt_client.publish(topic, json.dumps(msg))
+   publish_result = mqtt_client.publish(topic_publish_setpoints, json.dumps(msg))
    return jsonify({'code': publish_result[0]})
 
 @app.route('/')
@@ -244,4 +243,4 @@ if __name__ == '__main__':
    app.run(host='127.0.0.1', port=5000, threaded=True, debug=True)
 if __name__ != "__main__":
     print("hey you worked")
-    mqtt_client.client.loop_forever()
+    mqtt_client.client.loop_start()
